@@ -14,9 +14,9 @@
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "CyberAgent, Inc.",
-    "email": "npm@cyberagent.co.jp",
-    "url": "http://www.cyberagent.co.jp/"
+    "name": "The OpenSTF Project",
+    "email": "contact@openstf.io",
+    "url": "https://openstf.io"
   },
   "repository": {
     "type": "git",
@@ -95,7 +95,7 @@
     "chai": "^3.4.1",
     "css-loader": "^0.23.1",
     "del": "^2.0.1",
-    "eslint": "^2.0.0-beta.1",
+    "eslint": "^2.11.1",
     "event-stream": "^3.3.2",
     "exports-loader": "^0.6.2",
     "extract-text-webpack-plugin": "^1.0.1",
