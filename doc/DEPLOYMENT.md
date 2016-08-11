@@ -33,7 +33,7 @@ Since we're dealing with actual physical devices, some units need to be deployed
 
 The provider role requires the following units, which must be together on a single or more hosts.
 
-* [adbd.service](#adbservice)
+* [adbd.service](#adbdservice)
 * [stf-provider@.service](#stf-providerservice)
 
 ### App role
@@ -55,6 +55,7 @@ The app role can contain any of the following units. You may distribute them as 
 * [stf-triproxy-app.service](#stf-triproxy-appservice)
 * [stf-triproxy-dev.service](#stf-triproxy-devservice)
 * [stf-websocket@.service](#stf-websocketservice)
+* [stf-api@.service](#stf-apiservice)
 
 ### Database role
 
@@ -94,7 +95,7 @@ ExecStart=/usr/bin/docker run --rm \
   -v /dev/bus/usb:/dev/bus/usb \
   --net host \
   sorccu/adb:latest
-ExecStop=-/usr/bin/docker stop -t 2 %p
+ExecStop=/usr/bin/docker exec %p adb kill-server
 ```
 
 ### `rethinkdb.service`
@@ -106,7 +107,7 @@ If you need to expand your RethinkDB cluster beyond one server you may encounter
 You will also have to:
 
 1. Modify the `--cache-size` as you please. It limits the amount of memory RethinkDB uses and is given in megabytes, but is not an absolute limit! Real usage can be slightly higher.
-2. Update the version number in `rethinkdb:2.1.1` for the latest release. We don't use `rethinkdb:latest` here because then you might occasionally have to manually rebuild your indexes after an update and not even realize it, bringing the whole system effectively down.
+2. Update the version number in `rethinkdb:2.3` for the latest release. We don't use `rethinkdb:latest` here because then you might occasionally have to manually rebuild your indexes after an update and not even realize it, bringing the whole system effectively down.
 3. The `AUTHKEY` environment variable is only for convenience when linking. So, the first time you set things up, you will have to access http://DB_SERVER_IP:8080 after starting the unit and run the following command:
 
 ```javascript
@@ -127,7 +128,7 @@ Requires=docker.service
 EnvironmentFile=/etc/environment
 TimeoutStartSec=0
 Restart=always
-ExecStartPre=/usr/bin/docker pull rethinkdb:2.1.1
+ExecStartPre=/usr/bin/docker pull rethinkdb:2.3
 ExecStartPre=-/usr/bin/docker kill %p
 ExecStartPre=-/usr/bin/docker rm %p
 ExecStartPre=/usr/bin/mkdir -p /srv/rethinkdb
@@ -137,7 +138,7 @@ ExecStart=/usr/bin/docker run --rm \
   -v /srv/rethinkdb:/data \
   -e "AUTHKEY=YOUR_RETHINKDB_AUTH_KEY_HERE_IF_ANY" \
   --net host \
-  rethinkdb:2.1.1 \
+  rethinkdb:2.3 \
   rethinkdb --bind all \
     --cache-size 8192
 ExecStop=-/usr/bin/docker stop -t 10 %p
@@ -179,7 +180,7 @@ These units are required for proper operation of STF. Unless mentioned otherwise
 
 **Requires** the `rethinkdb-proxy-28015.service` unit on the same host.
 
-The app unit provides the main HTTP server and currently a very, very modest API for the client-side. It also serves all static resources including images, scripts and stylesheets.
+The app unit provides the main HTTP server and it serves all static resources including images, scripts and stylesheets.
 
 This is a template unit, meaning that you'll need to start it with an instance identifier. In this example configuration the identifier is used to specify the exposed port number (i.e. `stf-app@3100.service` runs on port 3100). You can have multiple instances running on the same host by using different ports.
 
@@ -204,7 +205,7 @@ ExecStart=/usr/bin/docker run --rm \
   openstf/stf:latest \
   stf app --port 3000 \
     --auth-url https://stf.example.org/auth/mock/ \
-    --websocket-url https://stf.example.org/
+    --websocket-url wss://stf.example.org/
 ExecStop=-/usr/bin/docker stop -t 10 %p-%i
 ```
 
@@ -653,6 +654,39 @@ ExecStart=/usr/bin/docker run --rm \
 ExecStop=/usr/bin/docker stop -t 10 %p-%i
 ```
 
+### `stf-api@.service`
+
+**Requires** the `rethinkdb-proxy-28015.service` unit on the same host.
+
+The api unit provides all the major RESTful APIs for STF. Users can generate their personal access token from STF UI and can use that token to access these api from any interface.
+
+This is a template unit, meaning that you'll need to start it with an instance identifier. In this example configuration the identifier is used to specify the exposed port number (i.e. `stf-api@3700.service` runs on port 3700). You can have multiple instances running on the same host by using different ports.
+
+```ini
+[Unit]
+Description=STF api
+After=rethinkdb-proxy-28015.service
+BindsTo=rethinkdb-proxy-28015.service
+
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=/usr/bin/docker pull openstf/stf:latest
+ExecStartPre=-/usr/bin/docker kill %p-%i
+ExecStartPre=-/usr/bin/docker rm %p-%i
+ExecStart=/usr/bin/docker run --rm \
+  --name %p-%i \
+  --link rethinkdb-proxy-28015:rethinkdb \
+  -e "SECRET=YOUR_SESSION_SECRET_HERE" \
+  -p %i:3000 \
+  openstf/stf:latest \
+  stf api --port 3000 \
+  --connect-sub tcp://appside.stf.example.org:7150 \
+  --connect-push tcp://appside.stf.example.org:7170  
+ExecStop=-/usr/bin/docker stop -t 10 %p-%i
+```
+
 ## Optional units
 
 These units are optional and don't affect the way STF works in any way.
@@ -836,6 +870,10 @@ http {
     server 192.168.255.100:3600 max_fails=0;
   }
 
+  upstream stf_api {
+    server 192.168.255.100:3700 max_fails=0;
+  }
+
   types {
     application/javascript  js;
     image/gif               gif;
@@ -902,6 +940,10 @@ http {
 
     location /auth/ {
       proxy_pass http://stf_auth/auth/;
+    }
+
+    location /api/ {
+      proxy_pass http://stf_api/api/;
     }
 
     location /s/image/ {

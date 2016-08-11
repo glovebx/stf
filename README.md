@@ -30,7 +30,7 @@ Please [contact us][contact-link] for sponsor arrangements. Both recurring and o
 
 ## Announcements
 
-* Thanks to @qband, @juliusspencer and Anonymous donors, we've been able to confirm [Android N Preview 4 support!](https://github.com/openstf/stf/issues/279)
+* Thanks to @qband, @juliusspencer and Anonymous donors, we've been able to confirm [Android N Preview 5 support!](https://github.com/openstf/stf/issues/279)
 * We've added a [donation transparency report](DONATION-TRANSPARENCY.md) for all to see.
 * [HeadSpin](https://headspin.io/) is now sponsoring future development!
 
@@ -38,7 +38,7 @@ Please [contact us][contact-link] for sponsor arrangements. Both recurring and o
 
 * OS support
   - Android
-    * Supports versions 2.3.3 (SDK level 10) to Android N Preview 4
+    * Supports versions 2.3.3 (SDK level 10) to Android N Preview 5
     * Supports Wear 5.1 (but not 5.0 due to missing permissions)
     * Supports Fire OS, CyanogenMod, and other heavily Android based distributions
     * `root` is **not** required for any current functionality
@@ -75,21 +75,23 @@ Please [contact us][contact-link] for sponsor arrangements. Both recurring and o
   - Rudimentary Play Store account management
     * List, remove and add new accounts (adding may not work on all devices)
   - Display hardware specs
+* Simple REST [API](doc/API.md)
 
 ## Status
 
 STF is in continued, active development, but development is still largely funded by individual team members and their unpaid free time, leading to slow progress. While normal for many open source projects, STF is quite heavy on the hardware side, and is therefore somewhat of a money sink. See [how to become a sponsor](#how-to-become-a-sponsor) if you or your company would like to support future development.
 
-We're also actively working to expand the team. Welcome **@vbanthia** as our newest full contributor!
+We're also actively working to expand the team, don't be afraid to ask if you're interested.
 
 ### Short term goals
 
 Here are some things we are planning to address ASAP.
 
-1. Properly expose the new VNC functionality in the UI
-2. Implement a basic REST API for programmatically using devices
+1. Performance
+2. Properly expose the new VNC functionality in the UI
 3. Properly reset user data between uses (Android 4.0+)
 4. Automated scheduled restarts for devices
+5. More!
 
 ### Consulting services
 
