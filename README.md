@@ -28,17 +28,11 @@ HeadSpin offers a generous monthly contribution towards STF development.
 
 Please [contact us][contact-link] for sponsor arrangements. Both recurring and one-time contributions are most welcome. Contributions towards a specific issue or feature are also possible, and can be attributed to your company in our release notes and other related materials. Hardware-only contributions, whether new or used, are also extremely helpful and well received, especially if you find a device that doesn't work. Please see our [donation transparency report](DONATION-TRANSPARENCY.md) for past hardware contributions.
 
-## Announcements
-
-* Thanks to @qband, @juliusspencer and Anonymous donors, we've been able to confirm [Android N Preview 5 support!](https://github.com/openstf/stf/issues/279)
-* We've added a [donation transparency report](DONATION-TRANSPARENCY.md) for all to see.
-* [HeadSpin](https://headspin.io/) is now sponsoring future development!
-
 ## Features
 
 * OS support
   - Android
-    * Supports versions 2.3.3 (SDK level 10) to Android N Preview 5
+    * Supports versions 2.3.3 (SDK level 10) to 7.1 (SDK level 25)
     * Supports Wear 5.1 (but not 5.0 due to missing permissions)
     * Supports Fire OS, CyanogenMod, and other heavily Android based distributions
     * `root` is **not** required for any current functionality
@@ -105,7 +99,7 @@ As the product has evolved from an internal tool running in our internal network
 
 ## Requirements
 
-* [Node.js](https://nodejs.org/) >= 0.12
+* [Node.js](https://nodejs.org/) >= 4.2 (latest stable version preferred)
 * [ADB](http://developer.android.com/tools/help/adb.html) properly set up
 * [RethinkDB](http://rethinkdb.com/) >= 2.2
 * [GraphicsMagick](http://www.graphicsmagick.org/) (for resizing screenshots)
@@ -200,11 +194,11 @@ Yes, see [DEPLOYMENT.md](doc/DEPLOYMENT.md) and [Setup Examples](https://github.
 
 ### Will I have to change battery packs all the time?
 
-Nope, we've had many devices running since the initial prototype phase about two years ago, and we've only had a single incident so far. The battery expanded causing the casing to split from the seams. The device itself was working fine and reporting full battery health, but it was discarded due to safety reasons.
+No, not all the time. Aside from a single early failure we had within only a few months, all of our devices were doing fine for about two years. However, having reached the 2-3 year mark, several devices have started to experience visibly expanded batteries. Expanded batteries should be replaced as soon as possible. Note that this issue isn't specific to STF, it's just what happens over time. You should be prepared to replace the batteries every now and then. In any case, we consider 2 years per battery pack to be fairly good value for a device lab.
 
-Devices should be allowed to turn their screens off when idle, which is what we are doing. All of our devices report perfect battery health so far.
+You should set up your devices so that the display is allowed to turn off entirely after a short timeout. 30 seconds or so should do just fine, STF will wake it up when necessary. Otherwise you risk reducing the lifetime of your device.
 
-Note that you may have a problem if your USB hubs are unable to both provide enough power and support the data connection at the same time. This can cause a device to stop charging when being used, resulting in many charging cycles. If this happens you will just need to [get a better USB hub](#recommended-hardware).
+Note that you may have a problem if your USB hubs are unable to both provide enough power for charging and support a data connection at the same time (data connections require power, too). This can cause a device to stop charging when being used, resulting in many charging cycles. If this happens you will just need to [get a better USB hub](#recommended-hardware).
 
 ### Is the system secure?
 
